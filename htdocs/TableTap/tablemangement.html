@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TableTap - Table Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'coffee-primary': '#6F4E37',
+                        'coffee-secondary': '#D2691E',
+                        'coffee-light': '#F5DEB3'
+                    }
+                }
+            }
+        }
+
+        // 模拟添加新桌位
+        function addNewTable() {
+            const tableNumber = document.getElementById('table-number').value;
+            const tableSeats = document.getElementById('table-seats').value;
+            
+            if (!tableNumber || !tableSeats) {
+                alert('Please fill in all fields');
+                return;
+            }
+
+            const tableList = document.getElementById('table-list');
+            const newTableRow = document.createElement('tr');
+            newTableRow.innerHTML = `
+                <td class="p-3 border">${tableNumber}</td>
+                <td class="p-3 border">${tableSeats}</td>
+                <td class="p-3 border">
+                    <button onclick="generateQRCode(this)" class="bg-coffee-primary text-white px-3 py-1 rounded mr-2">
+                        Generate QR
+                    </button>
+                    <button class="bg-red-500 text-white px-3 py-1 rounded">
+                        Delete
+                    </button>
+                </td>
+            `;
+            
+            tableList.appendChild(newTableRow);
+            
+            // 清空输入框
+            document.getElementById('table-number').value = '';
+            document.getElementById('table-seats').value = '';
+        }
+
+        // 模拟生成QR码
+        function generateQRCode(button) {
+            const row = button.closest('tr');
+            const tableNumber = row.cells[0].textContent;
+            alert(`Generating QR Code for Table ${tableNumber}`);
+            
+            // 实际应用中，这里会调用API生成QR码并显示
+            // 为演示目的，我们在按钮文本中显示"已生成"
+            button.textContent = 'QR Generated';
+            button.classList.add('bg-green-500');
+            button.classList.remove('bg-coffee-primary');
+        }
+        
+        // 删除桌位
+        function deleteTable(button) {
+            if (confirm('Are you sure you want to delete this table?')) {
+                const row = button.closest('tr');
+                row.remove();
+            }
+        }
+    </script>
+</head>
+<body class="bg-coffee-light">
+    <!-- 管理页面通用导航栏 -->
+    <div class="flex min-h-screen bg-coffee-light">
+        <!-- 侧边导航 -->
+        <div class="w-64 bg-coffee-primary text-white p-6 flex flex-col hidden md:block">
+            <div class="mb-8">
+                <h1 class="text-2xl font-bold">TableTap</h1>
+                <p class="text-sm text-white/70">Admin Dashboard</p>
+            </div>
+
+            <nav class="space-y-2">
+                <a href="dashborad.html" class="w-full text-left py-3 px-4 hover:bg-white/10 rounded flex items-center" id="nav-dashboard">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
+                    Dashboard
+                </a>
+                <a href="menumanagement.html" class="w-full text-left py-3 px-4 hover:bg-white/10 rounded flex items-center" id="nav-menu">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                    </svg>
+                    Menu Management
+                </a>
+                <a href="ordermanage.html" class="w-full text-left py-3 px-4 hover:bg-white/10 rounded flex items-center" id="nav-orders">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
+                    Order Management
+                </a>
+                <a href="tablemangement.html" class="w-full text-left py-3 px-4 hover:bg-white/10 rounded flex items-center" id="nav-tables">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Table Management
+                </a>
+                <a href="storeset.html" class="w-full text-left py-3 px-4 hover:bg-white/10 rounded flex items-center" id="nav-settings">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                    </svg>
+                    Shop Settings
+                </a>
+            </nav>
+
+        </div>
+
+        <!-- 主要内容区域 -->
+        <div class="flex-grow">
+            <!-- 移动端顶部导航栏 -->
+            <div class="md:hidden bg-coffee-primary text-white p-4 flex justify-between items-center">
+                <span class="font-bold text-xl">TableTap Admin</span>
+                <button id="mobile-menu-button" class="text-white focus:outline-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- 移动端导航菜单 -->
+            <div id="mobile-menu" class="md:hidden bg-coffee-primary text-white p-4 hidden">
+                <nav class="space-y-2">
+                    <a href="dashborad.html" class="block py-2 px-4 hover:bg-white/10 rounded" id="mobile-nav-dashboard">Dashboard</a>
+                    <a href="menumanagement.html" class="block py-2 px-4 hover:bg-white/10 rounded" id="mobile-nav-menu">Menu Management</a>
+                    <a href="ordermanage.html" class="block py-2 px-4 hover:bg-white/10 rounded" id="mobile-nav-orders">Order Management</a>
+                    <a href="tablemangement.html" class="block py-2 px-4 hover:bg-white/10 rounded" id="mobile-nav-tables">Table Management</a>
+                    <a href="storeset.html" class="block py-2 px-4 hover:bg-white/10 rounded" id="mobile-nav-settings">Shop Settings</a>
+                </nav>
+            </div>
+
+            <!-- 页面主要内容开始 -->
+            <div class="p-6">
+                <h1 class="text-3xl font-bold mb-6 text-coffee-primary">Table Management</h1>
+
+                <!-- 添加新桌位 -->
+                <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                    <h2 class="text-xl font-semibold mb-4 text-coffee-secondary">Add New Table</h2>
+                    <div class="grid md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block mb-2 text-gray-700">Table Number</label>
+                            <input 
+                                type="text" 
+                                id="table-number"
+                                class="w-full p-2 border rounded-lg"
+                                placeholder="Enter table number"
+                            >
+                        </div>
+                        <div>
+                            <label class="block mb-2 text-gray-700">Number of Seats</label>
+                            <input 
+                                type="number" 
+                                id="table-seats"
+                                class="w-full p-2 border rounded-lg"
+                                placeholder="Enter seat count"
+                            >
+                        </div>
+                        <div class="flex items-end">
+                            <button 
+                                onclick="addNewTable()"
+                                class="bg-coffee-primary text-white px-4 py-2 rounded-lg hover:bg-coffee-secondary transition duration-300"
+                            >
+                                Add Table
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 桌位列表 -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-xl font-semibold mb-4 text-coffee-secondary">Current Tables</h2>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="bg-coffee-light">
+                                    <th class="p-3 text-left">Table Number</th>
+                                    <th class="p-3 text-left">Seats</th>
+                                    <th class="p-3 text-left">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-list">
+                                <!-- 初始示例桌位 -->
+                                <tr>
+                                    <td class="p-3 border">1</td>
+                                    <td class="p-3 border">4</td>
+                                    <td class="p-3 border">
+                                        <button onclick="generateQRCode(this)" class="bg-coffee-primary text-white px-3 py-1 rounded mr-2">
+                                            Generate QR
+                                        </button>
+                                        <button onclick="deleteTable(this)" class="bg-red-500 text-white px-3 py-1 rounded">
+                                            Delete
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 border">2</td>
+                                    <td class="p-3 border">2</td>
+                                    <td class="p-3 border">
+                                        <button onclick="generateQRCode(this)" class="bg-coffee-primary text-white px-3 py-1 rounded mr-2">
+                                            Generate QR
+                                        </button>
+                                        <button onclick="deleteTable(this)" class="bg-red-500 text-white px-3 py-1 rounded">
+                                            Delete
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- QR码预览模态框（可选） -->
+                <div id="qr-preview-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
+                    <div class="bg-white rounded-lg p-6 w-full max-w-md">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-xl font-bold text-coffee-primary">Table QR Code</h3>
+                            <button onclick="document.getElementById('qr-preview-modal').classList.add('hidden')" class="text-gray-500">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="text-center">
+                            <div id="qr-code-container" class="bg-gray-100 w-64 h-64 mx-auto mb-4 flex items-center justify-center">
+                                <!-- QR码将在这里显示 -->
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-40 w-40 text-coffee-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+                                </svg>
+                            </div>
+                            <p class="mb-4">Table <span id="qr-table-number" class="font-bold">1</span></p>
+                            <div class="flex space-x-3 justify-center">
+                                <button class="bg-coffee-primary text-white px-3 py-2 rounded-lg hover:bg-coffee-secondary">
+                                    Download
+                                </button>
+                                <button class="bg-coffee-secondary text-white px-3 py-2 rounded-lg hover:bg-coffee-primary">
+                                    Print
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- 页面主要内容结束 -->
+        </div>
+    </div>
+
+    <script>
+        // 高亮当前页面对应的导航项
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentPage = window.location.pathname.split('/').pop();
+            
+            // 移除所有高亮
+            document.querySelectorAll('nav a').forEach(link => {
+                link.classList.remove('bg-white/10', 'font-bold');
+            });
+            
+            // 高亮当前页面的导航项
+            if (currentPage.includes('dashborad')) {
+                document.getElementById('nav-dashboard').classList.add('bg-white/10', 'font-bold');
+                document.getElementById('mobile-nav-dashboard')?.classList.add('bg-white/10', 'font-bold');
+            } else if (currentPage.includes('menumanagement')) {
+                document.getElementById('nav-menu').classList.add('bg-white/10', 'font-bold');
+                document.getElementById('mobile-nav-menu')?.classList.add('bg-white/10', 'font-bold');
+            } else if (currentPage.includes('ordermanage')) {
+                document.getElementById('nav-orders').classList.add('bg-white/10', 'font-bold');
+                document.getElementById('mobile-nav-orders')?.classList.add('bg-white/10', 'font-bold');
+            } else if (currentPage.includes('tablemangement')) {
+                document.getElementById('nav-tables').classList.add('bg-white/10', 'font-bold');
+                document.getElementById('mobile-nav-tables')?.classList.add('bg-white/10', 'font-bold');
+            } else if (currentPage.includes('storeset')) {
+                document.getElementById('nav-settings').classList.add('bg-white/10', 'font-bold');
+                document.getElementById('mobile-nav-settings')?.classList.add('bg-white/10', 'font-bold');
+            }
+        });
+
+        // 移动端菜单切换
+        document.getElementById('mobile-menu-button')?.addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        
+    </script>
+</body>
+</html>

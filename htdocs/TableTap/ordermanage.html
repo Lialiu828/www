@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TableTap - Order Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'coffee-primary': '#6F4E37',
+                        'coffee-secondary': '#D2691E',
+                        'coffee-light': '#F5DEB3'
+                    }
+                }
+            }
+        }
+
+        // 模拟订单状态更新
+        function updateOrderStatus(orderId, status) {
+            const orderElement = document.getElementById(`order-${orderId}`);
+            const statusElement = orderElement.querySelector('.order-status');
+            
+            // 移除所有状态类
+            statusElement.classList.remove('bg-yellow-500', 'bg-blue-500', 'bg-green-500');
+            
+            // 根据新状态添加对应的颜色
+            switch(status) {
+                case 'Preparing':
+                    statusElement.classList.add('bg-yellow-500');
+                    break;
+                case 'Ready':
+                    statusElement.classList.add('bg-blue-500');
+                    break;
+                case 'Completed':
+                    statusElement.classList.add('bg-green-500');
+                    break;
+            }
+            
+            statusElement.textContent = status;
+        }
+    </script>
+</head>
+<body class="bg-coffee-light">
+    <!-- 管理页面通用导航栏 -->
+    <div class="flex min-h-screen bg-coffee-light">
+        <!-- 侧边导航 -->
+        <div class="w-64 bg-coffee-primary text-white p-6 flex flex-col hidden md:block">
+            <div class="mb-8">
+                <h1 class="text-2xl font-bold">TableTap</h1>
+                <p class="text-sm text-white/70">Admin Dashboard</p>
+            </div>
+
+            <nav class="space-y-2">
+                <a href="dashborad.html" class="w-full text-left py-3 px-4 hover:bg-white/10 rounded flex items-center" id="nav-dashboard">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
+                    Dashboard
+                </a>
+                <a href="menumanagement.html" class="w-full text-left py-3 px-4 hover:bg-white/10 rounded flex items-center" id="nav-menu">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                    </svg>
+                    Menu Management
+                </a>
+                <a href="ordermanage.html" class="w-full text-left py-3 px-4 hover:bg-white/10 rounded flex items-center" id="nav-orders">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
+                    Order Management
+                </a>
+                <a href="tablemangement.html" class="w-full text-left py-3 px-4 hover:bg-white/10 rounded flex items-center" id="nav-tables">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Table Management
+                </a>
+                <a href="storeset.html" class="w-full text-left py-3 px-4 hover:bg-white/10 rounded flex items-center" id="nav-settings">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                    </svg>
+                    Shop Settings
+                </a>
+            </nav>
+
+            
+        </div>
+
+        <!-- 主要内容区域 -->
+        <div class="flex-grow">
+            <!-- 移动端顶部导航栏 -->
+            <div class="md:hidden bg-coffee-primary text-white p-4 flex justify-between items-center">
+                <span class="font-bold text-xl">TableTap Admin</span>
+                <button id="mobile-menu-button" class="text-white focus:outline-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- 移动端导航菜单 -->
+            <div id="mobile-menu" class="md:hidden bg-coffee-primary text-white p-4 hidden">
+                <nav class="space-y-2">
+                    <a href="dashborad.html" class="block py-2 px-4 hover:bg-white/10 rounded" id="mobile-nav-dashboard">Dashboard</a>
+                    <a href="menumanagement.html" class="block py-2 px-4 hover:bg-white/10 rounded" id="mobile-nav-menu">Menu Management</a>
+                    <a href="ordermanage.html" class="block py-2 px-4 hover:bg-white/10 rounded" id="mobile-nav-orders">Order Management</a>
+                    <a href="tablemangement.html" class="block py-2 px-4 hover:bg-white/10 rounded" id="mobile-nav-tables">Table Management</a>
+                    <a href="storeset.html" class="block py-2 px-4 hover:bg-white/10 rounded" id="mobile-nav-settings">Shop Settings</a>
+                    <button onclick="logout()" class="w-full mt-4 bg-coffee-secondary text-white py-2 rounded hover:bg-coffee-primary transition duration-300">
+                        Logout
+                    </button>
+                </nav>
+            </div>
+
+            <!-- 页面主要内容开始 -->
+            <div class="p-6">
+                <h1 class="text-3xl font-bold mb-6 text-coffee-primary">Current Orders</h1>
+
+                <!-- 订单筛选器 -->
+                <div class="mb-6 flex flex-col md:flex-row space-y-3 md:space-y-0 md:space-x-4">
+                    <select class="p-2 border rounded-lg">
+                        <option>All Orders</option>
+                        <option>Pending</option>
+                        <option>Preparing</option>
+                        <option>Ready</option>
+                        <option>Completed</option>
+                    </select>
+                    <input 
+                        type="text" 
+                        placeholder="Search orders" 
+                        class="p-2 border rounded-lg flex-grow"
+                    >
+                </div>
+
+                <!-- 订单列表 -->
+                <div class="space-y-4">
+                    <!-- 订单卡片 1 -->
+                    <div id="order-1" class="bg-white rounded-lg shadow-md p-4">
+                        <div class="flex justify-between items-center mb-4">
+                            <div>
+                                <h2 class="text-xl font-bold text-coffee-primary">Order #1</h2>
+                                <p class="text-gray-600">Table 12 • 10:45 AM</p>
+                            </div>
+                            <div 
+                                class="order-status px-3 py-1 rounded-full text-white bg-yellow-500"
+                            >
+                                Preparing
+                            </div>
+                        </div>
+
+                        <!-- 订单详情 -->
+                        <div class="border-t pt-4">
+                            <div class="flex justify-between mb-2">
+                                <span>1x Espresso</span>
+                                <span>$2.50</span>
+                            </div>
+                            <div class="flex justify-between mb-2">
+                                <span>1x Croissant</span>
+                                <span>$3.00</span>
+                            </div>
+                            <div class="flex justify-between font-bold text-coffee-primary">
+                                <span>Total</span>
+                                <span>$5.50</span>
+                            </div>
+                        </div>
+
+                        <!-- 订单操作按钮 -->
+                        <div class="mt-4 flex flex-wrap gap-2">
+                            <button 
+                                onclick="updateOrderStatus(1, 'Preparing')"
+                                class="bg-yellow-500 text-white px-3 py-2 rounded-lg"
+                            >
+                                Preparing
+                            </button>
+                            <button 
+                                onclick="updateOrderStatus(1, 'Ready')"
+                                class="bg-blue-500 text-white px-3 py-2 rounded-lg"
+                            >
+                                Ready
+                            </button>
+                            <button 
+                                onclick="updateOrderStatus(1, 'Completed')"
+                                class="bg-green-500 text-white px-3 py-2 rounded-lg"
+                            >
+                                Complete
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 订单卡片 2 -->
+                    <div id="order-2" class="bg-white rounded-lg shadow-md p-4">
+                        <div class="flex justify-between items-center mb-4">
+                            <div>
+                                <h2 class="text-xl font-bold text-coffee-primary">Order #2</h2>
+                                <p class="text-gray-600">Table 5 • 11:00 AM</p>
+                            </div>
+                            <div 
+                                class="order-status px-3 py-1 rounded-full text-white bg-yellow-500"
+                            >
+                                Preparing
+                            </div>
+                        </div>
+
+                        <!-- 订单详情 -->
+                        <div class="border-t pt-4">
+                            <div class="flex justify-between mb-2">
+                                <span>2x Cappuccino</span>
+                                <span>$7.00</span>
+                            </div>
+                            <div class="flex justify-between mb-2">
+                                <span>1x Muffin</span>
+                                <span>$2.75</span>
+                            </div>
+                            <div class="flex justify-between font-bold text-coffee-primary">
+                                <span>Total</span>
+                                <span>$9.75</span>
+                            </div>
+                        </div>
+
+                        <!-- 订单操作按钮 -->
+                        <div class="mt-4 flex flex-wrap gap-2">
+                            <button 
+                                onclick="updateOrderStatus(2, 'Preparing')"
+                                class="bg-yellow-500 text-white px-3 py-2 rounded-lg"
+                            >
+                                Preparing
+                            </button>
+                            <button 
+                                onclick="updateOrderStatus(2, 'Ready')"
+                                class="bg-blue-500 text-white px-3 py-2 rounded-lg"
+                            >
+                                Ready
+                            </button>
+                            <button 
+                                onclick="updateOrderStatus(2, 'Completed')"
+                                class="bg-green-500 text-white px-3 py-2 rounded-lg"
+                            >
+                                Complete
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- 订单卡片 3 (已完成) -->
+                    <div id="order-3" class="bg-white rounded-lg shadow-md p-4 opacity-80">
+                        <div class="flex justify-between items-center mb-4">
+                            <div>
+                                <h2 class="text-xl font-bold text-coffee-primary">Order #3</h2>
+                                <p class="text-gray-600">Table 8 • 9:30 AM</p>
+                            </div>
+                            <div 
+                                class="order-status px-3 py-1 rounded-full text-white bg-green-500"
+                            >
+                                Completed
+                            </div>
+                        </div>
+
+                        <!-- 订单详情 -->
+                        <div class="border-t pt-4">
+                            <div class="flex justify-between mb-2">
+                                <span>1x Latte</span>
+                                <span>$4.25</span>
+                            </div>
+                            <div class="flex justify-between mb-2">
+                                <span>1x Cheesecake</span>
+                                <span>$5.50</span>
+                            </div>
+                            <div class="flex justify-between font-bold text-coffee-primary">
+                                <span>Total</span>
+                                <span>$9.75</span>
+                            </div>
+                        </div>
+                        
+                        <!-- 完成时间 -->
+                        <div class="mt-4 text-right text-sm text-gray-500">
+                            Completed at 10:15 AM
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- 页面主要内容结束 -->
+        </div>
+    </div>
+
+    <script>
+        // 高亮当前页面对应的导航项
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentPage = window.location.pathname.split('/').pop();
+            
+            // 移除所有高亮
+            document.querySelectorAll('nav a').forEach(link => {
+                link.classList.remove('bg-white/10', 'font-bold');
+            });
+            
+            // 高亮当前页面的导航项
+            if (currentPage.includes('dashborad')) {
+                document.getElementById('nav-dashboard').classList.add('bg-white/10', 'font-bold');
+                document.getElementById('mobile-nav-dashboard')?.classList.add('bg-white/10', 'font-bold');
+            } else if (currentPage.includes('menumanagement')) {
+                document.getElementById('nav-menu').classList.add('bg-white/10', 'font-bold');
+                document.getElementById('mobile-nav-menu')?.classList.add('bg-white/10', 'font-bold');
+            } else if (currentPage.includes('ordermanage')) {
+                document.getElementById('nav-orders').classList.add('bg-white/10', 'font-bold');
+                document.getElementById('mobile-nav-orders')?.classList.add('bg-white/10', 'font-bold');
+            } else if (currentPage.includes('tablemangement')) {
+                document.getElementById('nav-tables').classList.add('bg-white/10', 'font-bold');
+                document.getElementById('mobile-nav-tables')?.classList.add('bg-white/10', 'font-bold');
+            } else if (currentPage.includes('storeset')) {
+                document.getElementById('nav-settings').classList.add('bg-white/10', 'font-bold');
+                document.getElementById('mobile-nav-settings')?.classList.add('bg-white/10', 'font-bold');
+            }
+        });
+
+        // 移动端菜单切换
+        document.getElementById('mobile-menu-button')?.addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        
+    </script>
+</body>
+</html>
