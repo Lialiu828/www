@@ -1,0 +1,309 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TableTap - Shop Settings</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'coffee-primary': '#6F4E37',
+                        'coffee-secondary': '#D2691E',
+                        'coffee-light': '#F5DEB3'
+                    }
+                }
+            }
+        }
+
+        // 模拟保存设置
+        function saveSettings() {
+            const shopName = document.getElementById('shop-name').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            const address = document.getElementById('address').value;
+            
+            // 工作时间收集
+            const openTime = document.getElementById('open-time').value;
+            const closeTime = document.getElementById('close-time').value;
+            
+            // 支付方式收集
+            const paymentMethods = Array.from(
+                document.querySelectorAll('input[name="payment-method"]:checked')
+            ).map(cb => cb.value);
+
+            // 这里可以添加更多的验证逻辑
+            alert('Settings saved successfully!\n' + 
+                  `Shop Name: ${shopName}\n` +
+                  `Working Hours: ${openTime} - ${closeTime}\n` +
+                  `Payment Methods: ${paymentMethods.join(', ')}`);
+        }
+    </script>
+</head>
+<body class="bg-coffee-light">
+    <!-- 管理页面通用导航栏 -->
+    <div class="flex min-h-screen bg-coffee-light">
+        <!-- 侧边导航 -->
+        <div class="w-64 bg-coffee-primary text-white p-6 flex flex-col hidden md:block">
+            <div class="mb-8">
+                <h1 class="text-2xl font-bold">TableTap</h1>
+                <p class="text-sm text-white/70">Admin Dashboard</p>
+            </div>
+
+            <nav class="space-y-2">
+                <a href="dashborad.html" class="w-full text-left py-3 px-4 hover:bg-white/10 rounded flex items-center" id="nav-dashboard">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
+                    Dashboard
+                </a>
+                <a href="menumanagement.html" class="w-full text-left py-3 px-4 hover:bg-white/10 rounded flex items-center" id="nav-menu">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                    </svg>
+                    Menu Management
+                </a>
+                <a href="ordermanage.html" class="w-full text-left py-3 px-4 hover:bg-white/10 rounded flex items-center" id="nav-orders">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
+                    Order Management
+                </a>
+                <a href="tablemangement.html" class="w-full text-left py-3 px-4 hover:bg-white/10 rounded flex items-center" id="nav-tables">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Table Management
+                </a>
+                <a href="storeset.html" class="w-full text-left py-3 px-4 hover:bg-white/10 rounded flex items-center" id="nav-settings">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                    </svg>
+                    Shop Settings
+                </a>
+            </nav>
+
+            
+        </div>
+
+        <!-- 主要内容区域 -->
+        <div class="flex-grow">
+            <!-- 移动端顶部导航栏 -->
+            <div class="md:hidden bg-coffee-primary text-white p-4 flex justify-between items-center">
+                <span class="font-bold text-xl">TableTap Admin</span>
+                <button id="mobile-menu-button" class="text-white focus:outline-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- 移动端导航菜单 -->
+            <div id="mobile-menu" class="md:hidden bg-coffee-primary text-white p-4 hidden">
+                <nav class="space-y-2">
+                    <a href="dashborad.html" class="block py-2 px-4 hover:bg-white/10 rounded" id="mobile-nav-dashboard">Dashboard</a>
+                    <a href="menumanagement.html" class="block py-2 px-4 hover:bg-white/10 rounded" id="mobile-nav-menu">Menu Management</a>
+                    <a href="ordermanage.html" class="block py-2 px-4 hover:bg-white/10 rounded" id="mobile-nav-orders">Order Management</a>
+                    <a href="tablemangement.html" class="block py-2 px-4 hover:bg-white/10 rounded" id="mobile-nav-tables">Table Management</a>
+                    <a href="storeset.html" class="block py-2 px-4 hover:bg-white/10 rounded" id="mobile-nav-settings">Shop Settings</a>
+                    <button onclick="logout()" class="w-full mt-4 bg-coffee-secondary text-white py-2 rounded hover:bg-coffee-primary transition duration-300">
+                        Logout
+                    </button>
+                </nav>
+            </div>
+
+            <!-- 页面主要内容开始 -->
+            <div class="p-6">
+                <h1 class="text-3xl font-bold mb-6 text-coffee-primary">Shop Settings</h1>
+
+                <!-- 基本信息 -->
+                <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                    <h2 class="text-xl font-semibold mb-4 text-coffee-secondary">Basic Information</h2>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block mb-2 text-gray-700">Shop Name</label>
+                            <input 
+                                type="text" 
+                                id="shop-name"
+                                class="w-full p-2 border rounded-lg"
+                                placeholder="Enter shop name"
+                                value="Caffeine Corner"
+                            >
+                        </div>
+                        <div>
+                            <label class="block mb-2 text-gray-700">Contact Email</label>
+                            <input 
+                                type="email" 
+                                id="email"
+                                class="w-full p-2 border rounded-lg"
+                                placeholder="Enter contact email"
+                                value="contact@caffeinecorner.com"
+                            >
+                        </div>
+                        <div>
+                            <label class="block mb-2 text-gray-700">Phone Number</label>
+                            <input 
+                                type="tel" 
+                                id="phone"
+                                class="w-full p-2 border rounded-lg"
+                                placeholder="Enter phone number"
+                                value="+1 (555) 123-4567"
+                            >
+                        </div>
+                        <div>
+                            <label class="block mb-2 text-gray-700">Shop Address</label>
+                            <input 
+                                type="text" 
+                                id="address"
+                                class="w-full p-2 border rounded-lg"
+                                placeholder="Enter shop address"
+                                value="123 Coffee Street, Brewtown"
+                            >
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 营业时间 -->
+                <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                    <h2 class="text-xl font-semibold mb-4 text-coffee-secondary">Working Hours</h2>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block mb-2 text-gray-700">Open Time</label>
+                            <input 
+                                type="time" 
+                                id="open-time"
+                                class="w-full p-2 border rounded-lg"
+                                value="07:00"
+                            >
+                        </div>
+                        <div>
+                            <label class="block mb-2 text-gray-700">Close Time</label>
+                            <input 
+                                type="time" 
+                                id="close-time"
+                                class="w-full p-2 border rounded-lg"
+                                value="22:00"
+                            >
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 支付方式 -->
+                <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                    <h2 class="text-xl font-semibold mb-4 text-coffee-secondary">Payment Methods</h2>
+                    <div class="grid md:grid-cols-3 gap-4">
+                        <div class="flex items-center">
+                            <input 
+                                type="checkbox" 
+                                id="cash" 
+                                name="payment-method" 
+                                value="Cash"
+                                class="mr-2"
+                                checked
+                            >
+                            <label for="cash">Cash</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input 
+                                type="checkbox" 
+                                id="credit-card" 
+                                name="payment-method" 
+                                value="Credit Card"
+                                class="mr-2"
+                                checked
+                            >
+                            <label for="credit-card">Credit Card</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input 
+                                type="checkbox" 
+                                id="mobile-pay" 
+                                name="payment-method" 
+                                value="Mobile Payment"
+                                class="mr-2"
+                                checked
+                            >
+                            <label for="mobile-pay">Mobile Payment</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 其他设置 -->
+                <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                    <h2 class="text-xl font-semibold mb-4 text-coffee-secondary">Additional Settings</h2>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block mb-2 text-gray-700">Language</label>
+                            <select class="w-full p-2 border rounded-lg">
+                                <option>English</option>
+                                <option>Spanish</option>
+                                <option>French</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block mb-2 text-gray-700">Currency</label>
+                            <select class="w-full p-2 border rounded-lg">
+                                <option>USD ($)</option>
+                                <option>EUR (€)</option>
+                                <option>GBP (£)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 保存按钮 -->
+                <div class="text-center">
+                    <button 
+                        onclick="saveSettings()"
+                        class="bg-coffee-primary text-white px-8 py-3 rounded-lg hover:bg-coffee-secondary transition duration-300"
+                    >
+                        Save Settings
+                    </button>
+                </div>
+            </div>
+            <!-- 页面主要内容结束 -->
+        </div>
+    </div>
+
+    <script>
+        // 高亮当前页面对应的导航项
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentPage = window.location.pathname.split('/').pop();
+            
+            // 移除所有高亮
+            document.querySelectorAll('nav a').forEach(link => {
+                link.classList.remove('bg-white/10', 'font-bold');
+            });
+            
+            // 高亮当前页面的导航项
+            if (currentPage.includes('dashborad')) {
+                document.getElementById('nav-dashboard').classList.add('bg-white/10', 'font-bold');
+                document.getElementById('mobile-nav-dashboard')?.classList.add('bg-white/10', 'font-bold');
+            } else if (currentPage.includes('menumanagement')) {
+                document.getElementById('nav-menu').classList.add('bg-white/10', 'font-bold');
+                document.getElementById('mobile-nav-menu')?.classList.add('bg-white/10', 'font-bold');
+            } else if (currentPage.includes('ordermanage')) {
+                document.getElementById('nav-orders').classList.add('bg-white/10', 'font-bold');
+                document.getElementById('mobile-nav-orders')?.classList.add('bg-white/10', 'font-bold');
+            } else if (currentPage.includes('tablemangement')) {
+                document.getElementById('nav-tables').classList.add('bg-white/10', 'font-bold');
+                document.getElementById('mobile-nav-tables')?.classList.add('bg-white/10', 'font-bold');
+            } else if (currentPage.includes('storeset')) {
+                document.getElementById('nav-settings').classList.add('bg-white/10', 'font-bold');
+                document.getElementById('mobile-nav-settings')?.classList.add('bg-white/10', 'font-bold');
+            }
+        });
+
+        // 移动端菜单切换
+        document.getElementById('mobile-menu-button')?.addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        
+    </script>
+</body>
+</html>

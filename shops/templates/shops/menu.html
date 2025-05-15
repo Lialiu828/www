@@ -1,0 +1,458 @@
+{% extends "shops/base.html" %}
+{% load static %}
+
+{% block title %}TableTap - Brew Your Perfect Order!{% endblock %}
+
+{% block extra_head %}
+<script>
+    // Cart management
+    let cart = [];
+
+    // New function to handle data attributes
+    function toggleCustomizationModalFromData(button) {
+        const name = button.getAttribute('data-product-name');
+        const price = parseFloat(button.getAttribute('data-product-price'));
+        toggleCustomizationModal({name: name, price: price});
+    }
+
+    // Toggle customization modal
+    function toggleCustomizationModal(product) {
+        const modal = document.getElementById('customization-modal');
+        const productTitle = document.getElementById('product-title');
+        const productPrice = document.getElementById('product-price');
+        
+        productTitle.textContent = product.name;
+        productPrice.textContent = `$${product.price.toFixed(2)}`;
+        
+        // Reset previous selections
+        resetCustomizationOptions(product);
+        
+        modal.classList.remove('hidden');
+    }
+
+    // Reset customization options
+    function resetCustomizationOptions(product) {
+        const sizeContainer = document.getElementById('size-options');
+        const milkContainer = document.getElementById('milk-options');
+        const sugarContainer = document.getElementById('sugar-options');
+
+        // Size options with playful descriptions
+        sizeContainer.innerHTML = [
+            {name: 'Small', desc: 'Just a sip 🍵'},
+            {name: 'Medium', desc: 'Perfect balance 🤌'},
+            {name: 'Large', desc: 'Go big or go home! 💪'}
+        ].map(size => `
+            <button onclick="selectOption('size', '${size.name}')" 
+                    class="size-option py-2 bg-white border rounded-lg text-center hover:bg-coffee-light flex flex-col">
+                <span class="font-semibold">${size.name}</span>
+                <span class="text-xs text-gray-500">${size.desc}</span>
+            </button>
+        `).join('');
+
+        // Milk options with fun emojis
+        milkContainer.innerHTML = [
+            {name: 'Regular', emoji: '🥛'},
+            {name: 'Oat Milk', emoji: '🌾'},
+            {name: 'Almond Milk', emoji: '🥜'},
+            {name: 'Soy Milk', emoji: '🫘'}
+        ].map(milk => `
+            <button onclick="selectOption('milk', '${milk.name}')" 
+                    class="milk-option py-2 bg-white border rounded-lg text-center hover:bg-coffee-light flex flex-col">
+                <span class="text-2xl">${milk.emoji}</span>
+                <span class="text-sm">${milk.name}</span>
+            </button>
+        `).join('');
+
+        // Sugar options with attitude
+        sugarContainer.innerHTML = [
+            {name: 'No Sugar', desc: 'Pure & Strong 💪'},
+            {name: 'Less Sugar', desc: 'Keeping it light 🌿'},
+            {name: 'Normal', desc: 'Just right 👌'},
+            {name: 'Extra Sweet', desc: 'Sugar rush! 🍭'}
+        ].map(sugar => `
+            <button onclick="selectOption('sugar', '${sugar.name}')" 
+                    class="sugar-option py-2 bg-white border rounded-lg text-center hover:bg-coffee-light flex flex-col">
+                <span class="font-semibold">${sugar.name}</span>
+                <span class="text-xs text-gray-500">${sugar.desc}</span>
+            </button>
+        `).join('');
+    }
+
+    // Select customization option
+    function selectOption(type, value) {
+        // Remove selected state for same type
+        document.querySelectorAll(`.${type}-option`).forEach(el => {
+            el.classList.remove('bg-coffee-primary', 'text-white');
+        });
+
+        // Highlight selected option
+        event.currentTarget.classList.add('bg-coffee-primary', 'text-white');
+    }
+
+    // Add to cart
+    function addToCart() {
+        const productName = document.getElementById('product-title').textContent;
+        const productPrice = parseFloat(document.getElementById('product-price').textContent.replace('$', ''));
+        
+        // Get selected customization options
+        const sizeElement = document.querySelector('.size-option.bg-coffee-primary');
+        const milkElement = document.querySelector('.milk-option.bg-coffee-primary');
+        const sugarElement = document.querySelector('.sugar-option.bg-coffee-primary');
+        
+        const size = sizeElement ? sizeElement.querySelector('span:first-child').textContent : 'Medium';
+        const milk = milkElement ? milkElement.querySelector('span:last-child').textContent : 'Regular';
+        const sugar = sugarElement ? sugarElement.querySelector('span:first-child').textContent : 'Normal';
+        
+        const cartItem = {
+            name: productName,
+            price: productPrice,
+            size: size,
+            milk: milk,
+            sugar: sugar
+        };
+
+        cart.push(cartItem);
+        updateCartDisplay();
+        
+        // Close modal with a fun message
+        alert(`🎉 ${productName} added to your cart!`);
+        document.getElementById('customization-modal').classList.add('hidden');
+    }
+
+    // Update cart display
+    function updateCartDisplay() {
+        const cartCount = document.getElementById('cart-count');
+        const cartTotal = document.getElementById('cart-total');
+        
+        cartCount.textContent = cart.length;
+        const total = cart.reduce((sum, item) => sum + item.price, 0);
+        cartTotal.textContent = `$${total.toFixed(2)}`;
+    }
+
+    // Show cart preview
+    function showCartPreview() {
+        if (cart.length === 0) {
+            alert('Oops! Your cart is empty. Let\'s add some delicious drinks! 🍵');
+            return;
+        }
+        
+        const cartItemsContainer = document.getElementById('cart-items-container');
+        const cartPreviewTotal = document.getElementById('cart-preview-total');
+        
+        // Clear previous items
+        cartItemsContainer.innerHTML = '';
+        
+        // Add items to preview
+        cart.forEach((item, index) => {
+            cartItemsContainer.innerHTML += `
+                <div class="flex justify-between items-center py-2 border-b">
+                    <div>
+                        <p class="font-medium">${item.name}</p>
+                        <p class="text-sm text-gray-500">${item.size}, ${item.milk}, ${item.sugar}</p>
+                    </div>
+                    <div class="flex items-center">
+                        <span class="mr-2">$${item.price.toFixed(2)}</span>
+                        <button onclick="removeCartItem(${index})" class="text-red-500 hover:text-red-700">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            `;
+        });
+        
+        // Update total
+        const total = cart.reduce((sum, item) => sum + item.price, 0);
+        cartPreviewTotal.textContent = `$${total.toFixed(2)}`;
+        
+        // Show modal
+        document.getElementById('cart-preview-modal').classList.remove('hidden');
+    }
+
+    // Close cart preview
+    function closeCartPreview() {
+        document.getElementById('cart-preview-modal').classList.add('hidden');
+    }
+
+    // Remove cart item
+    function removeCartItem(index) {
+        cart.splice(index, 1);
+        updateCartDisplay();
+        
+        // Refresh cart preview
+        showCartPreview();
+        
+        // If cart is empty, close preview
+        if (cart.length === 0) {
+            closeCartPreview();
+        }
+    }
+
+    // Proceed to checkout
+    function proceedToCheckout() {
+        localStorage.setItem('cart', JSON.stringify(cart));
+        window.location.href = "{% url 'checkout' %}";
+    }
+    
+    // Get and display table number
+    document.addEventListener('DOMContentLoaded', function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const tableParam = urlParams.get('table');
+        const tableDisplay = document.getElementById('tableNumber');
+        
+        if (tableParam && tableDisplay) {
+            tableDisplay.textContent = tableParam;
+            localStorage.setItem('tableNumber', tableParam);
+        } else if (tableDisplay) {
+            const storedTable = localStorage.getItem('tableNumber');
+            if (storedTable) {
+                tableDisplay.textContent = storedTable;
+            }
+        }
+        
+        // Try to restore cart from localStorage
+        const savedCart = localStorage.getItem('cart');
+        if (savedCart) {
+            try {
+                cart = JSON.parse(savedCart);
+                updateCartDisplay();
+            } catch (e) {
+                console.error('Error parsing saved cart:', e);
+            }
+        }
+    });
+</script>
+{% endblock %}
+
+{% block body_class %}bg-coffee-light min-h-screen{% endblock %}
+
+{% block content %}
+    <!-- User navigation bar start -->
+    <nav class="bg-coffee-primary text-white p-4 sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center">
+                <span class="font-bold text-xl">TableTap</span>
+            </div>
+            
+            <!-- User navigation menu -->
+            <div class="flex items-center space-x-4">
+                <a href="{% url 'menu' %}" class="hover:text-coffee-light font-bold">Menu</a>
+                <a href="{% url 'checkout' %}" class="hover:text-coffee-light">Checkout</a>
+                <span class="text-coffee-light">Table: <span id="tableNumber">--</span></span>
+                <button 
+                    onclick="showCartPreview()"
+                    class="bg-white text-coffee-primary px-3 py-1 rounded-full text-sm flex items-center"
+                >
+                    Cart (<span id="cart-count">0</span>) 
+                    <span id="cart-total" class="ml-2">$0.00</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+    <!-- User navigation bar end -->
+
+    <!-- Menu Content -->
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold mb-6 text-coffee-primary">Brew Your Perfect Drink! ☕</h1>
+
+        <!-- Menu Categories -->
+        <div class="mb-6">
+            <div class="flex space-x-4 overflow-x-auto">
+                <button class="px-4 py-2 bg-white text-coffee-primary rounded-full shadow-md">All Goodies</button>
+                <button class="px-4 py-2 bg-white text-coffee-primary rounded-full shadow-md">Coffee Magic ☕</button>
+                <button class="px-4 py-2 bg-white text-coffee-primary rounded-full shadow-md">Tea Time 🍵</button>
+                <button class="px-4 py-2 bg-white text-coffee-primary rounded-full shadow-md">Sweet Treats 🍰</button>
+            </div>
+        </div>
+
+        <!-- Menu Grid -->
+        <div class="grid md:grid-cols-3 gap-6" id="menu-items">
+            {% for product in menu_items %}
+            <div class="bg-white rounded-lg shadow-md p-4">
+                <div class="mb-4 bg-gray-200 h-48 rounded-lg overflow-hidden">
+                    {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-full object-cover">
+                    {% else %}
+                    <div class="w-full h-full flex items-center justify-center text-gray-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                    </div>
+                    {% endif %}
+                </div>
+                <h3 class="text-xl font-semibold mb-2 text-coffee-primary">{{ product.name }}</h3>
+                <p class="text-gray-600 mb-4">{{ product.description }}</p>
+                <div class="flex justify-between items-center">
+                    <span class="text-lg font-bold text-coffee-secondary">${{ product.price|floatformat:2 }}</span>
+                    <button 
+                        data-product-name="{{ product.name|escapejs }}" 
+                        data-product-price="{{ product.price|default:'0' }}"
+                        onclick="toggleCustomizationModalFromData(this)"
+                        class="bg-coffee-primary text-white px-4 py-2 rounded-lg hover:bg-coffee-secondary transition duration-300"
+                    >
+                        Customize!
+                    </button>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-span-3 text-center py-8">
+                <p class="text-gray-500">No menu items available at the moment.</p>
+            </div>
+            {% endfor %}
+
+            {% comment %}
+            <!-- Static items for when no data is available -->
+            {% if not menu_items %}
+            <!-- Espresso Card -->
+            <div class="bg-white rounded-lg shadow-md p-4">
+                <div class="mb-4 bg-gray-200 h-48 rounded-lg overflow-hidden">
+                    <img src="{% static 'shops/images/espresso.jpg' %}" alt="Espresso Shot" class="w-full h-full object-cover">
+                </div>
+                <h3 class="text-xl font-semibold mb-2 text-coffee-primary">Espresso Shot</h3>
+                <p class="text-gray-600 mb-4">Quick energy boost! Bold & intense ⚡</p>
+                <div class="flex justify-between items-center">
+                    <span class="text-lg font-bold text-coffee-secondary">$2.50</span>
+                    <button 
+                        data-product-name="Espresso Shot" 
+                        data-product-price="2.50"
+                        onclick="toggleCustomizationModalFromData(this)"
+                        class="bg-coffee-primary text-white px-4 py-2 rounded-lg hover:bg-coffee-secondary transition duration-300"
+                    >
+                        Customize My Shot! 🎯
+                    </button>
+                </div>
+            </div>
+
+            <!-- Cappuccino Card -->
+            <div class="bg-white rounded-lg shadow-md p-4">
+                <div class="mb-4 bg-gray-200 h-48 rounded-lg overflow-hidden">
+                    <img src="{% static 'shops/images/cappuccino.jpg' %}" alt="Creamy Cappuccino" class="w-full h-full object-cover">
+                </div>
+                <h3 class="text-xl font-semibold mb-2 text-coffee-primary">Creamy Cappuccino</h3>
+                <p class="text-gray-600 mb-4">Smooth & dreamy with perfect foam 🌟</p>
+                <div class="flex justify-between items-center">
+                    <span class="text-lg font-bold text-coffee-secondary">$3.50</span>
+                    <button 
+                        data-product-name="Creamy Cappuccino" 
+                        data-product-price="3.50"
+                        onclick="toggleCustomizationModalFromData(this)"
+                        class="bg-coffee-primary text-white px-4 py-2 rounded-lg hover:bg-coffee-secondary transition duration-300"
+                    >
+                        Make It Mine! 🌈
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Latte Card -->
+            <div class="bg-white rounded-lg shadow-md p-4">
+                <div class="mb-4 bg-gray-200 h-48 rounded-lg overflow-hidden">
+                    <img src="{% static 'shops/images/latte.jpg' %}" alt="Vanilla Latte" class="w-full h-full object-cover">
+                </div>
+                <h3 class="text-xl font-semibold mb-2 text-coffee-primary">Vanilla Latte</h3>
+                <p class="text-gray-600 mb-4">Rich espresso with creamy vanilla goodness 💫</p>
+                <div class="flex justify-between items-center">
+                    <span class="text-lg font-bold text-coffee-secondary">$4.25</span>
+                    <button 
+                        data-product-name="Vanilla Latte" 
+                        data-product-price="4.25"
+                        onclick="toggleCustomizationModalFromData(this)"
+                        class="bg-coffee-primary text-white px-4 py-2 rounded-lg hover:bg-coffee-secondary transition duration-300"
+                    >
+                        Personalize! ✨
+                    </button>
+                </div>
+            </div>
+            {% endif %}
+            {% endcomment %}
+        </div>
+    </div>
+
+    <!-- Product Customization Modal -->
+    <div id="customization-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md">
+            <h3 class="text-xl font-bold mb-4 text-coffee-primary">
+                Customize Your <span id="product-title">Drink</span> 🎨
+            </h3>
+            
+            <div class="space-y-4">
+                <!-- Price -->
+                <div class="text-center mb-4">
+                    <span class="text-2xl font-bold text-coffee-secondary" id="product-price">$0.00</span>
+                </div>
+
+                <!-- Size Selection -->
+                <div>
+                    <label class="block mb-2 text-gray-700">Pick Your Size 📏</label>
+                    <div id="size-options" class="grid grid-cols-3 gap-2">
+                        <!-- Dynamically generated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Milk Selection -->
+                <div class="mt-4">
+                    <label class="block mb-2 text-gray-700">Milk Magic 🥛</label>
+                    <div id="milk-options" class="grid grid-cols-2 gap-2">
+                        <!-- Dynamically generated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Sugar Selection -->
+                <div class="mt-4">
+                    <label class="block mb-2 text-gray-700">Sugar Level 🍬</label>
+                    <div id="sugar-options" class="grid grid-cols-2 gap-2">
+                        <!-- Dynamically generated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Add to Cart Button -->
+                <div class="mt-6">
+                    <button 
+                        onclick="addToCart()"
+                        class="w-full bg-coffee-primary text-white p-3 rounded-lg hover:bg-coffee-secondary transition duration-300"
+                    >
+                        Add to Cart 🛒
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cart Preview Modal -->
+    <div id="cart-preview-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-coffee-primary">Your Cart 🛒</h3>
+                <button onclick="closeCartPreview()" class="text-gray-500 hover:text-gray-700">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            
+            <div id="cart-items-container" class="max-h-60 overflow-y-auto mb-4">
+                <!-- Cart items will be displayed here -->
+            </div>
+            
+            <div class="flex justify-between font-bold text-coffee-primary border-t pt-4">
+                <span>Total:</span>
+                <span id="cart-preview-total">$0.00</span>
+            </div>
+            
+            <div class="mt-6 flex space-x-2">
+                <button 
+                    onclick="closeCartPreview()"
+                    class="flex-1 bg-gray-200 text-gray-800 p-2 rounded-lg hover:bg-gray-300 transition duration-300"
+                >
+                    Continue Shopping
+                </button>
+                <button 
+                    onclick="proceedToCheckout()"
+                    class="flex-1 bg-coffee-primary text-white p-2 rounded-lg hover:bg-coffee-secondary transition duration-300"
+                >
+                    Checkout
+                </button>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,68 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}TableTap - Coffee Shop Ordering System{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'coffee-primary': '#6F4E37',
+                        'coffee-secondary': '#D2691E',
+                        'coffee-light': '#F5DEB3'
+                    }
+                }
+            }
+        }
+    </script>
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="{% block body_class %}bg-coffee-light min-h-screen flex flex-col{% endblock %}">
+    {% block content %}{% endblock %}
+    
+    {% block extra_body %}{% endblock %}
+    
+    <!-- Django specific JavaScript -->
+    <script>
+        // Add CSRF token to AJAX requests
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        // Setup CSRF token for AJAX requests
+        const csrftoken = getCookie('csrftoken');
+        
+        // Add CSRF token to all AJAX requests
+        document.addEventListener('DOMContentLoaded', function() {
+            // If using fetch API
+            window.fetch = (function(originalFetch) {
+                return function(url, config) {
+                    config = config || {};
+                    if (config.method && ['POST', 'PUT', 'DELETE', 'PATCH'].includes(config.method.toUpperCase())) {
+                        config.headers = config.headers || {};
+                        config.headers['X-CSRFToken'] = csrftoken;
+                    }
+                    return originalFetch(url, config);
+                };
+            })(window.fetch);
+        });
+    </script>
+    
+    {% block scripts %}{% endblock %}
+</body>
+</html>

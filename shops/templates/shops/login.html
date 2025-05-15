@@ -1,0 +1,175 @@
+{% extends "shops/base.html" %}
+{% load static %}
+
+{% block title %}TableTap - Sign Up{% endblock %}
+
+{% block content %}
+<div class="bg-coffee-light min-h-screen flex items-center justify-center">
+    <div class="w-full max-w-md bg-white p-8 rounded-lg shadow-md">
+        <div class="text-center mb-6">
+            <h1 class="text-3xl font-bold text-coffee-primary">TableTap</h1>
+            <p class="text-gray-600 mt-2">Create Your Account</p>
+        </div>
+
+        <!-- 用户类型选择 -->
+        <div class="flex justify-center mb-6">
+            <div class="flex space-x-4">
+                <label class="inline-flex items-center">
+                    <input 
+                        type="radio" 
+                        name="user-type" 
+                        value="customer" 
+                        class="form-radio text-coffee-primary"
+                        checked
+                    >
+                    <span class="ml-2">Customer</span>
+                </label>
+                <label class="inline-flex items-center">
+                    <input 
+                        type="radio" 
+                        name="user-type" 
+                        value="business" 
+                        class="form-radio text-coffee-primary"
+                    >
+                    <span class="ml-2">Business Owner</span>
+                </label>
+            </div>
+        </div>
+
+        <form method="post" action="{% url 'signup' %}" class="space-y-4">
+            {% csrf_token %}
+            
+            {% if form.errors %}
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
+                <ul>
+                    {% for field, errors in form.errors.items %}
+                        {% for error in errors %}
+                            <li>{{ field }}: {{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+            
+            <div>
+                <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
+                <input 
+                    type="email" 
+                    id="email" 
+                    name="email" 
+                    required 
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-coffee-primary focus:border-coffee-primary"
+                    placeholder="Enter your email"
+                >
+            </div>
+
+            <div>
+                <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                <input 
+                    type="password" 
+                    id="password" 
+                    name="password" 
+                    required 
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-coffee-primary focus:border-coffee-primary"
+                    placeholder="Create a password"
+                >
+            </div>
+
+            <div>
+                <label for="confirm-password" class="block text-sm font-medium text-gray-700">Confirm Password</label>
+                <input 
+                    type="password" 
+                    id="confirm-password" 
+                    name="confirm_password" 
+                    required 
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-coffee-primary focus:border-coffee-primary"
+                    placeholder="Confirm your password"
+                >
+            </div>
+            
+            <input type="hidden" name="user_type" id="user_type" value="customer">
+
+            <div class="flex items-center">
+                <input 
+                    type="checkbox" 
+                    id="terms" 
+                    name="terms" 
+                    required
+                    class="h-4 w-4 text-coffee-primary focus:ring-coffee-primary border-gray-300 rounded mr-2"
+                >
+                <label for="terms" class="text-sm text-gray-600">
+                    I agree to the 
+                    <a href="#" class="text-coffee-secondary hover:text-coffee-primary">
+                        Terms and Conditions
+                    </a>
+                </label>
+            </div>
+
+            <div>
+                <button 
+                    type="submit" 
+                    class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-coffee-primary hover:bg-coffee-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-coffee-primary"
+                >
+                    Sign Up
+                </button>
+            </div>
+        </form>
+
+        <div class="mt-6">
+            <div class="relative">
+                <div class="absolute inset-0 flex items-center">
+                    <div class="w-full border-t border-gray-300"></div>
+                </div>
+                <div class="relative flex justify-center text-sm">
+                    <span class="px-2 bg-white text-gray-500">
+                        Or sign up with
+                    </span>
+                </div>
+            </div>
+
+            <div class="mt-6 grid grid-cols-3 gap-3">
+                <div>
+                    <a href="{% url 'social:begin' 'google-oauth2' %}" class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                        Google
+                    </a>
+                </div>
+                <div>
+                    <a href="{% url 'social:begin' 'github' %}" class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                        GitHub
+                    </a>
+                </div>
+                <div>
+                    <a href="{% url 'social:begin' 'facebook' %}" class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                        Facebook
+                    </a>
+                </div>
+            </div>
+
+            <div class="mt-6 text-center">
+                <p class="text-sm text-gray-600">
+                    Already have an account? 
+                    <a href="{% url 'login' %}" class="font-medium text-coffee-secondary hover:text-coffee-primary">
+                        Log in
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Update hidden field when radio buttons change
+    document.addEventListener('DOMContentLoaded', function() {
+        const radioButtons = document.querySelectorAll('input[name="user-type"]');
+        const userTypeField = document.getElementById('user_type');
+        
+        radioButtons.forEach(button => {
+            button.addEventListener('change', function() {
+                userTypeField.value = this.value;
+            });
+        });
+    });
+</script>
+{% endblock %}

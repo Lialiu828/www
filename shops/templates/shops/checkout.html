@@ -1,0 +1,278 @@
+{% extends "shops/base.html" %}
+{% load static %}
+
+{% block title %}TableTap - Checkout & Order Status{% endblock %}
+
+{% block extra_head %}
+<script>
+    // 支付方式选择
+    let selectedPaymentMethod = null;
+
+    function selectPaymentMethod(method) {
+        // 移除之前选择的支付方式高亮
+        document.querySelectorAll('.payment-method-button').forEach(button => {
+            button.classList.remove('ring-2', 'ring-coffee-secondary', 'bg-coffee-light');
+            button.classList.add('bg-white');
+        });
+        
+        // 高亮当前选择的支付方式
+        const button = document.getElementById(`payment-${method}`);
+        button.classList.remove('bg-white');
+        button.classList.add('ring-2', 'ring-coffee-secondary', 'bg-coffee-light');
+        
+        // 记录选择的支付方式
+        selectedPaymentMethod = method;
+    }
+
+    // 模拟订单处理功能
+    function processOrder() {
+        const name = document.getElementById('name').value;
+        const specialInstructions = document.getElementById('special-instructions').value;
+        
+        // 验证表单
+        if (!name) {
+            alert('Please enter your name');
+            return;
+        }
+        
+        if (!selectedPaymentMethod) {
+            alert('Please select a payment method');
+            return;
+        }
+        
+        // 在实际应用中，这里会发送订单到后端
+        alert('Order Submitted Successfully!\n' + 
+              `Name: ${name}\n` + 
+              `Special Instructions: ${specialInstructions}\n` +
+              `Payment Method: ${selectedPaymentMethod}`);
+              
+        // 清空购物车
+        localStorage.removeItem('cart');
+        
+        // 显示订单已提交消息
+        document.getElementById('checkout-form').classList.add('hidden');
+        document.getElementById('order-submitted').classList.remove('hidden');
+    }
+
+    // 模拟加载订单状态
+    function loadOrderStatus() {
+        // 从localStorage获取购物车信息
+        const cartData = localStorage.getItem('cart');
+        let orderItems = [];
+        let total = 0;
+        
+        if (cartData) {
+            try {
+                const cartItems = JSON.parse(cartData);
+                orderItems = cartItems;
+                total = cartItems.reduce((sum, item) => sum + item.price, 0);
+            } catch (e) {
+                console.error('Error parsing cart data:', e);
+            }
+        }
+        
+        // 填充订单摘要
+        const orderSummaryContainer = document.getElementById('order-summary');
+        if (orderSummaryContainer) {
+            if (orderItems.length > 0) {
+                let summaryHTML = '';
+                
+                orderItems.forEach(item => {
+                    summaryHTML += `
+                    <div class="flex justify-between">
+                        <span>${item.name} (${item.size}, ${item.milk}, ${item.sugar})</span>
+                        <span>$${item.price.toFixed(2)}</span>
+                    </div>`;
+                });
+                
+                summaryHTML += `
+                <div class="flex justify-between font-bold text-coffee-primary mt-2">
+                    <span>Total</span>
+                    <span>$${total.toFixed(2)}</span>
+                </div>`;
+                
+                orderSummaryContainer.innerHTML = summaryHTML;
+            } else {
+                orderSummaryContainer.innerHTML = '<p class="text-gray-500">No items in cart. <a href="{% url "menu" %}" class="text-coffee-secondary">Return to menu</a> to add items.</p>';
+            }
+        }
+
+        // 模拟订单状态显示
+        const orderStatuses = [
+            {
+                orderId: '#1234',
+                items: ['Espresso', 'Croissant'],
+                status: 'Preparing',
+                statusColor: 'text-yellow-500'
+            },
+            {
+                orderId: '#5678', 
+                items: ['Cappuccino', 'Muffin'],
+                status: 'Ready',
+                statusColor: 'text-green-500'
+            }
+        ];
+
+        const orderStatusContainer = document.getElementById('order-status-container');
+        if (orderStatusContainer) {
+            orderStatusContainer.innerHTML = orderStatuses.map(order => `
+                <div class="bg-white rounded-lg shadow-md p-4 mb-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="font-bold text-coffee-primary">Order ${order.orderId}</h3>
+                        <span class="${order.statusColor} font-semibold">${order.status}</span>
+                    </div>
+                    <div class="text-gray-600">
+                        ${order.items.map(item => `<p>• ${item}</p>`).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+    }
+
+    // 获取和显示桌号
+    function loadTableNumber() {
+        const tableDisplay = document.getElementById('tableNumber');
+        if (tableDisplay) {
+            const storedTable = localStorage.getItem('tableNumber');
+            if (storedTable) {
+                tableDisplay.textContent = storedTable;
+            }
+        }
+    }
+
+    // 返回菜单页面
+    function backToMenu() {
+        window.location.href = '{% url "menu" %}';
+    }
+
+    // 页面加载时调用
+    document.addEventListener('DOMContentLoaded', function() {
+        loadOrderStatus();
+        loadTableNumber();
+    });
+</script>
+{% endblock %}
+
+{% block body_class %}bg-coffee-light min-h-screen{% endblock %}
+
+{% block content %}
+    <!-- 用户导航栏开始 -->
+    <nav class="bg-coffee-primary text-white p-4 sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center">
+                <span class="font-bold text-xl">TableTap</span>
+            </div>
+            
+            <!-- 用户导航菜单 -->
+            <div class="flex items-center space-x-4">
+                <a href="{% url 'menu' %}" class="hover:text-coffee-light">Menu</a>
+                <a href="{% url 'checkout' %}" class="hover:text-coffee-light font-bold">Checkout</a>
+                <span class="text-coffee-light">Table: <span id="tableNumber">--</span></span>
+            </div>
+        </div>
+    </nav>
+    <!-- 用户导航栏结束 -->
+
+    <div class="container mx-auto px-4 py-8">
+        <!-- 结账页面 -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <h1 class="text-3xl font-bold mb-6 text-coffee-primary">Checkout</h1>
+            
+            <!-- 订单摘要 -->
+            <div class="border-b pb-4 mb-4">
+                <h2 class="text-xl font-semibold mb-2">Order Summary</h2>
+                <div id="order-summary" class="space-y-2">
+                    <!-- 动态填充订单项目 -->
+                </div>
+            </div>
+
+            <!-- 结账表单 -->
+            <div id="checkout-form">
+                <form class="space-y-4">
+                    <div>
+                        <label class="block mb-2 text-gray-700">Name</label>
+                        <input 
+                            type="text" 
+                            id="name"
+                            class="w-full p-2 border rounded-lg"
+                            placeholder="Enter your name"
+                            required
+                        >
+                    </div>
+
+                    <div>
+                        <label class="block mb-2 text-gray-700">Special Instructions</label>
+                        <textarea 
+                            id="special-instructions"
+                            class="w-full p-2 border rounded-lg"
+                            placeholder="Any special requests?"
+                            rows="3"
+                        ></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block mb-2 text-gray-700">Payment Method</label>
+                        <div class="grid grid-cols-3 gap-2">
+                            <button 
+                                id="payment-credit"
+                                type="button" 
+                                onclick="selectPaymentMethod('credit')"
+                                class="payment-method-button bg-white border rounded-lg p-2 flex flex-col items-center transition duration-200 hover:bg-coffee-light/50"
+                            >
+                                💳 Credit Card
+                            </button>
+                            <button 
+                                id="payment-mobile"
+                                type="button" 
+                                onclick="selectPaymentMethod('mobile')"
+                                class="payment-method-button bg-white border rounded-lg p-2 flex flex-col items-center transition duration-200 hover:bg-coffee-light/50"
+                            >
+                                💰 Mobile Pay
+                            </button>
+                            <button 
+                                id="payment-cash"
+                                type="button" 
+                                onclick="selectPaymentMethod('cash')"
+                                class="payment-method-button bg-white border rounded-lg p-2 flex flex-col items-center transition duration-200 hover:bg-coffee-light/50"
+                            >
+                                💵 Cash
+                            </button>
+                        </div>
+                    </div>
+
+                    <button 
+                        type="button"
+                        onclick="processOrder()"
+                        class="w-full bg-coffee-primary text-white p-3 rounded-lg hover:bg-coffee-secondary transition duration-300"
+                    >
+                        Place Order
+                    </button>
+                </form>
+            </div>
+            
+            <!-- 订单已提交消息 -->
+            <div id="order-submitted" class="hidden text-center py-6">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20 mx-auto text-green-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <h2 class="text-2xl font-bold text-coffee-primary mb-2">Order Placed Successfully!</h2>
+                <p class="text-gray-600 mb-6">Your coffee will be prepared shortly. Check the order status below.</p>
+                <button 
+                    onclick="backToMenu()"
+                    class="bg-coffee-primary text-white px-6 py-2 rounded-lg hover:bg-coffee-secondary transition duration-300"
+                >
+                    Order More Drinks
+                </button>
+            </div>
+        </div>
+
+        <!-- 订单状态页面 -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h1 class="text-3xl font-bold mb-6 text-coffee-primary">Order Status</h1>
+            
+            <div id="order-status-container" class="space-y-4">
+                <!-- 通过 JavaScript 动态加载订单状态 -->
+            </div>
+        </div>
+    </div>
+{% endblock %}
