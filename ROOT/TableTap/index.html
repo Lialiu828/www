@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TableTap - Your Coffee, Your Way</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'coffee-primary': '#6F4E37',
+                        'coffee-secondary': '#D2691E',
+                        'coffee-light': '#F5DEB3'
+                    }
+                }
+            }
+        }
+
+        // Simulate table number scanning
+        function scanTable() {
+            const tableNumber = document.getElementById('table-number').value;
+            if (tableNumber) {
+                // In a real app, this would validate the table and redirect
+                window.location.href = `menu.html?table=${tableNumber}`;
+            } else {
+                alert('Oops! Please enter your table number 🍵');
+            }
+        }
+    </script>
+</head>
+<body class="bg-coffee-light min-h-screen flex flex-col">
+    <!-- Top Navigation -->
+    <nav class="bg-coffee-primary text-white p-4 sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center">
+                <span class="font-bold text-xl">TableTap</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-8 flex-grow flex items-center justify-center">
+        <div class="bg-white rounded-lg shadow-lg p-8 w-full max-w-md text-center">
+            <h1 class="text-3xl font-bold text-coffee-primary mb-4">Welcome to TableTap! 🌿</h1>
+            
+            <p class="text-gray-600 mb-6">
+                Ready to order? Scan the QR code at your table or enter your table number below.
+            </p>
+            
+            <div class="mb-6">
+                <input 
+                    type="text" 
+                    id="table-number"
+                    class="w-full p-3 border rounded-lg text-center mb-4"
+                    placeholder="Enter Your Table Number"
+                >
+                
+                <button 
+                    onclick="scanTable()"
+                    class="w-full bg-coffee-primary text-white p-3 rounded-lg hover:bg-coffee-secondary transition duration-300"
+                >
+                    Let's Order! ☕
+                </button>
+            </div>
+
+            <div class="text-sm text-gray-500">
+                No QR code? Just ask our friendly staff to help you out! 😊
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-coffee-primary text-white py-4">
+        <div class="container mx-auto text-center">
+            <p>© 2025 TableTap - Brewing Happiness, One Order at a Time</p>
+        </div>
+    </footer>
+</body>
+</html>

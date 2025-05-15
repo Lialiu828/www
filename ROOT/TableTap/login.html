@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TableTap - Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'coffee-primary': '#6F4E37',
+                        'coffee-secondary': '#D2691E',
+                        'coffee-light': '#F5DEB3'
+                    }
+                }
+            }
+        }
+
+        // 选择用户角色
+        function selectRole(role) {
+            // 移除之前选择的角色高亮
+            document.getElementById('platform-role').classList.remove('ring-2', 'ring-coffee-primary', 'bg-coffee-light/50');
+            document.getElementById('store-role').classList.remove('ring-2', 'ring-coffee-primary', 'bg-coffee-light/50');
+            document.getElementById('customer-role').classList.remove('ring-2', 'ring-coffee-primary', 'bg-coffee-light/50');
+            
+            // 高亮当前选择的角色
+            document.getElementById(`${role}-role`).classList.add('ring-2', 'ring-coffee-primary', 'bg-coffee-light/50');
+            
+            // 记录选择的角色
+            document.getElementById('selected-role').value = role;
+            
+            // 预填登录信息
+            const emailField = document.getElementById('email');
+            const passwordField = document.getElementById('password');
+            
+            if (role === 'platform') {
+                emailField.value = 'platform@tabletap.com';
+                passwordField.value = 'platform123';
+            } else if (role === 'store') {
+                emailField.value = 'admin@tabletap.com';
+                passwordField.value = 'admin123';
+            } else if (role === 'customer') {
+                emailField.value = 'customer@tabletap.com';
+                passwordField.value = 'customer123';
+            }
+        }
+
+        // 登录验证函数
+        function login() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const userRole = document.getElementById('selected-role').value;
+
+            // 简单的登录验证逻辑（实际应用中应该是服务器端验证）
+            if (email && password) {
+                if (userRole === 'platform') {
+                    // 平台管理员登录
+                    if (email === 'platform@tabletap.com' && password === 'platform123') {
+                        localStorage.setItem('userRole', 'platformAdmin');
+                        window.location.href = 'SaaSPlatformAdmin.html';
+                    } else {
+                        alert('Invalid platform admin credentials');
+                    }
+                } else if (userRole === 'store') {
+                    // 商店管理员登录
+                    if (email === 'admin@tabletap.com' && password === 'admin123') {
+                        localStorage.setItem('userRole', 'admin');
+                        window.location.href = 'dashborad.html';
+                    } else {
+                        alert('Invalid store admin credentials');
+                    }
+                } else {
+                    // 顾客登录
+                    if (email === 'customer@tabletap.com' && password === 'customer123') {
+                        localStorage.setItem('userRole', 'customer');
+                        window.location.href = 'index.html';
+                    } else {
+                        alert('Invalid customer credentials');
+                    }
+                }
+            } else {
+                alert('Please enter both email and password');
+            }
+        }
+
+        // 跳过登录直接进入点餐流程
+        function skipLogin() {
+            window.location.href = 'index.html';
+        }
+
+        // 页面加载时默认选择商店管理员角色
+        document.addEventListener('DOMContentLoaded', function() {
+            selectRole('store');
+        });
+    </script>
+</head>
+<body class="bg-coffee-light min-h-screen flex items-center justify-center">
+    <div class="w-full max-w-md bg-white p-8 rounded-lg shadow-md">
+        <div class="text-center mb-6">
+            <h1 class="text-3xl font-bold text-coffee-primary">TableTap</h1>
+            <p class="text-gray-600 mt-2">Coffee Shop Ordering System</p>
+        </div>
+
+        <!-- 角色选择 -->
+        <div class="mb-6">
+            <h2 class="text-lg font-medium text-coffee-primary mb-3">Login As:</h2>
+            <input type="hidden" id="selected-role" value="store">
+            <div class="grid grid-cols-3 gap-4">
+                <div id="platform-role" class="bg-white p-3 border rounded-lg text-center cursor-pointer hover:bg-coffee-light/20 transition duration-200" onclick="selectRole('platform')">
+                    <div class="text-coffee-primary text-xl mb-1">👑</div>
+                    <div class="font-medium">Platform Admin</div>
+                    <div class="text-xs text-gray-500">Manage all shops</div>
+                </div>
+                <div id="store-role" class="bg-white p-3 border rounded-lg text-center cursor-pointer hover:bg-coffee-light/20 transition duration-200" onclick="selectRole('store')">
+                    <div class="text-coffee-primary text-xl mb-1">🏪</div>
+                    <div class="font-medium">Store Admin</div>
+                    <div class="text-xs text-gray-500">Manage your shop</div>
+                </div>
+                <div id="customer-role" class="bg-white p-3 border rounded-lg text-center cursor-pointer hover:bg-coffee-light/20 transition duration-200" onclick="selectRole('customer')">
+                    <div class="text-coffee-primary text-xl mb-1">☕</div>
+                    <div class="font-medium">Customer</div>
+                    <div class="text-xs text-gray-500">Order coffee</div>
+                </div>
+            </div>
+        </div>
+
+        <form class="space-y-4">
+            <div>
+                <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                <input 
+                    type="email" 
+                    id="email" 
+                    name="email" 
+                    required 
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-coffee-primary focus:border-coffee-primary"
+                    placeholder="Enter your email"
+                >
+            </div>
+
+            <div>
+                <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                <input 
+                    type="password" 
+                    id="password" 
+                    name="password" 
+                    required 
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-coffee-primary focus:border-coffee-primary"
+                    placeholder="Enter your password"
+                >
+            </div>
+
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <input 
+                        id="remember-me" 
+                        name="remember-me" 
+                        type="checkbox" 
+                        class="h-4 w-4 text-coffee-primary focus:ring-coffee-primary border-gray-300 rounded"
+                    >
+                    <label for="remember-me" class="ml-2 block text-sm text-gray-900">
+                        Remember me
+                    </label>
+                </div>
+
+                <div class="text-sm">
+                    <a href="#" class="font-medium text-coffee-secondary hover:text-coffee-primary">
+                        Forgot your password?
+                    </a>
+                </div>
+            </div>
+
+            <div>
+                <button 
+                    type="button"
+                    onclick="login()"
+                    class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-coffee-primary hover:bg-coffee-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-coffee-primary"
+                >
+                    Sign in
+                </button>
+            </div>
+        </form>
+
+        <!-- 顾客跳过登录选项 -->
+        <div class="mt-4 text-center">
+            <p class="text-sm text-gray-600">
+                Just want to order? 
+                <button 
+                    onclick="skipLogin()"
+                    class="font-medium text-coffee-secondary hover:text-coffee-primary"
+                >
+                    Skip Login and Continue
+                </button>
+            </p>
+        </div>
+
+        <div class="mt-6">
+            <div class="relative">
+                <div class="absolute inset-0 flex items-center">
+                    <div class="w-full border-t border-gray-300"></div>
+                </div>
+                <div class="relative flex justify-center text-sm">
+                    <span class="px-2 bg-white text-gray-500">
+                        Or continue with
+                    </span>
+                </div>
+            </div>
+
+            <div class="mt-6 grid grid-cols-3 gap-3">
+                <div>
+                    <a href="#" class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                        Google
+                    </a>
+                </div>
+                <div>
+                    <a href="#" class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                        Apple
+                    </a>
+                </div>
+                <div>
+                    <a href="#" class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                        Facebook
+                    </a>
+                </div>
+            </div>
+
+            <div class="mt-6 text-center">
+                <p class="text-sm text-gray-600">
+                    Don't have an account? 
+                    <a href="signup.html" class="font-medium text-coffee-secondary hover:text-coffee-primary">
+                        Sign up
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
